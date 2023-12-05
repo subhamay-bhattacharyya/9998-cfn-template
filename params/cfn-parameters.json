@@ -1,0 +1,23 @@
+{
+    "stack-prefix": "test",
+    "stack-suffix": "stack",
+    "template-path": "/cft/sample-cft.yaml",
+    "project-name": "template",
+    "parameters": {
+        "devl": [
+            {
+                "Environment": "devl"
+            }
+        ],
+        "test": [
+            {
+                "Environment": "test"
+            }
+        ],
+        "prod": [
+            {
+                "Environment": "prod"
+            }
+        ]
+    }
+}

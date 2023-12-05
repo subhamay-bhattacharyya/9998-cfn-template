@@ -1,0 +1,171 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Project Description
+
+Metadata:
+  TemplateName: sample-cft.yaml
+  TemplateType: Template Type
+  Version: N.N.N
+  Owner: <Owner>
+  ProjectName: <Project Name>
+  Modification History:
+    - 1.0.0  - Mmm DD, YYYY   -- Initial Version
+  Resources: 
+    - Resources
+  StepsToTest: |
+    Manualy verify the Stack.
+  StepsToCleanup: |
+    Stack delete command
+  
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    #################################### Project Name and Environment ##############################
+    - Label:
+        default: "Project Name And Environment:"
+      Parameters:
+      - ProjectName
+      - Environment
+    #################################### GitHub Attributes #########################################
+    - Label:
+        default: "GitHub Attributes:"
+      Parameters:
+      - GitHubRef
+      - GitHubURL
+      - GitHubWFRunNumber
+      - GitHubSHA
+      - GitHubRepository
+      - CiBuild
+      - StackName
+    #################################### Code Repository Bucket ####################################
+    - Label: 
+        default: "Code Repository Bucket:"
+      Parameters:
+        - CodeRepositoryS3Bucket
+    #################################### KMS Key ###################################################
+    - Label: 
+        default: "KMS Configuration:"
+      Parameters: 
+        - KmsMasterKeyId
+    ParameterLabels:
+      ################################## Project Name and Environment ##############################
+      ProjectName:
+        default: "Project Name."
+      Environment:
+        default: "Environment Name."
+      #################################### KMS Key ###################################################
+      KmsMasterKeyId:
+        default: "KMS Key Id."
+      ################################## GitHub Attributes #########################################
+      GitHubRef:
+        default: "GitHub Ref"
+      GitHubURL: 
+        default: "GitHub repository URL"
+      GitHubWFRunNumber:
+        default: "GitHub Workflow Run Number."
+      GitHubSHA: 
+        default: "GitHub Workflow Run Number."
+      GitHubRepository:
+        default: "GitHub repository name."
+      CiBuild:
+        default: "Feature branch Ci Build"
+      ################################## Code Repository Bucket ####################################
+      CodeRepositoryS3Bucket:
+        default: "Lambda Code S3 Bucket."
+
+Parameters:
+  ###################################### Project Name and Environment ##############################
+  ProjectName:
+    Default: lilac
+    Description: "The Project Name for which the custom resource will be used."
+    Type: String
+    MinLength: 5
+    MaxLength: 20
+    AllowedPattern: "[a-z]*"
+    ConstraintDescription: "The length should be between 5 and 30, must contain only lowercase alphabets."
+  Environment:
+    Default: devl
+    Description: "The Environment Name."
+    Type: String
+    AllowedValues: ["devl", "test", "prod"]
+    ConstraintDescription: "The Environment must be devl / test or prod"
+  #################################### GitHub Attributes #########################################
+  GitHubRef:
+    Default: ref_name
+    Description: "GitHub Ref Name"
+    Type: String
+  GitHubURL:
+    Default: "https://github.com/"
+    Description: "GitHub URL"
+    Type: String
+  GitHubWFRunNumber:
+    Default: 1
+    Description: "The Workfloww Run Number."
+    Type: Number
+  GitHubSHA:
+    Default: "sha"
+    Description: "The sha value of the last commit"
+    Type: String
+  GitHubRepository:
+    Default: 001-tarius
+    Description: "The GitHub Repository name."
+    Type: String
+    MinLength: 10
+    MaxLength: 30
+    AllowedPattern: "[a-z0-9-.]*"
+    ConstraintDescription: "The reposiroty length should be between 10 and 30, must contain only lowercase letter,numbers,dash, dot and should start with a letter."
+  CiBuild:
+    Default: ""
+    Description: "Ci Build of the feature branch."
+    Type: String
+  StackName:
+    Default: ""
+    Description: "The name of the stack which created the resource"
+    Type: String
+  ###################################### Code Repository Bucket ####################################
+  CodeRepositoryS3Bucket:
+    Default: subhamay-projects-repository-us-east-1
+    Description: "S3 Bucket Storing The Lambda Code."
+    Type: String
+    MinLength: 10
+    MaxLength: 63
+    AllowedPattern: "[a-z][a-z0-9-.]*"
+    ConstraintDescription: "The length should be between 3 and 63, must contain only lowercase letter,numbers,dash, dot and should start with a letter."
+  ###################################### KMS Key ###################################################
+  KmsMasterKeyId:
+    Default: "arn:aws:kms:us-east-1:237376087602:key/f7eb118d-f1d2-4d70-a046-dfada470840e"
+    Description: "The KMS Key Id Used For Encryption."
+    Type: String
+    MinLength: 75
+    MaxLength: 75
+    AllowedPattern: "[a-z:/0-9-]*"
+    ConstraintDescription: "The length of the KMS Key Id should be 36 and must be lowercase alphabets, numbers and dash."
+
+
+Resources:
+  S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !Sub "subhamay-test-bucket-1111-2223-3333-444-5555-${Environment}"
+        Tags:
+        - Key: GitHubRepository
+          Value: !Ref GitHubRepository
+        - Key: CodeRepositoryS3Bucket
+          Value: !Ref CodeRepositoryS3Bucket
+        - Key: CiBuild
+          Value: !Ref CiBuild
+        - Key: KmsMasterKeyId
+          Value: !Ref KmsMasterKeyId
+        - Key: GitHubRef
+          Value: !Ref GitHubRef
+        - Key: ProjectName
+          Value: !Ref ProjectName
+        - Key: GitHubURL
+          Value: !Ref GitHubURL
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: GitHubWFRunNumber
+          Value: !Ref GitHubWFRunNumber
+        - Key: GitHubSHA
+          Value: !Ref GitHubSHA
+        - Key: StackName
+          Value: !Ref StackName
