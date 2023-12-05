@@ -1,6 +1,6 @@
 FROM redhat/ubi8
 
-LABEL maintainer="Subhamay Bhattacharyya GitHub"
+LABEL maintainer="Subhamay Bhattacharyya"
 
 # install dependencies
 RUN yum -y install httpd
